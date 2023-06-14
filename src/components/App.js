@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute.js';
 import Header from './Header.js';
 import Main from './Main.js';
 import Footer from './Footer.js';
@@ -6,6 +8,8 @@ import ImagePopup from './ImagePopup.js';
 import PopupWithForm from './PopupWithForm.js';
 import EditProfilePopup from './EditProfilePopup.js';
 import EditAvatarPopup from './EditAvatarPopup.js';
+import Login from './Login.js';
+import Register from './Register.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 import api from '../utils/api.js';
 import AddPlacePopup from './AddPlacePopup.js';
@@ -19,6 +23,7 @@ function App() {
     const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState({});
     const [currentUser, setCurrentUser] = useState({});
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
         Promise.all([
@@ -96,7 +101,7 @@ function App() {
 
     function handleAddPlaceSubmit(card) {
         api.addItem(card)
-            .then((newCard )=> {setCards([newCard, ...cards])})
+            .then((newCard) => { setCards([newCard, ...cards]) })
             .then(() => closeAllPopups())
             .catch(err => console.log(err));
     }
@@ -105,18 +110,27 @@ function App() {
         <div className="page">
             <CurrentUserContext.Provider value={currentUser}>
                 <Header />
-                <Main
-                    onEditAvatar={handleEditAvatarClick}
-                    onEditProfile={handleEditProfileClick}
-                    onAddPlace={handleAddPlaceClick}
-                    onCardClick={handleCardClick}
-                    cards={cards}
-                    onCardLike={handleCardLike}
-                    onCardDelete={handleCardDelete} />
+                <Routes>
+                    <Route path="/sign-in" element={<Login />} />
+                    <Route path="/sign-up" element={<Register />} />
+                    <Route path="*" element={isLoggedIn ? <Navigate to="/" /> : <Navigate to="/sign-in" />} />
+                    <Route path="/" 
+                    element={<ProtectedRoute 
+                        element={Main} 
+                        isLoggedIn={isLoggedIn}
+                        onEditAvatar={handleEditAvatarClick}
+                        onEditProfile={handleEditProfileClick}
+                        onAddPlace={handleAddPlaceClick}
+                        onCardClick={handleCardClick}
+                        cards={cards}
+                        onCardLike={handleCardLike}
+                        onCardDelete={handleCardDelete} />}
+                    />
+
+                </Routes>
 
                 <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
                 <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} />
-
                 <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
 
                 <PopupWithForm
@@ -126,9 +140,7 @@ function App() {
                     buttonText={"Да"}>
                 </PopupWithForm>
 
-                <ImagePopup
-                    card={selectedCard}
-                    onClose={closeAllPopups} />
+                <ImagePopup card={selectedCard} onClose={closeAllPopups} />
 
                 <Footer />
             </CurrentUserContext.Provider>
