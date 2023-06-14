@@ -1,22 +1,55 @@
+import { useState } from "react";
 import Header from "./Header";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import * as auth from '../utils/auth.js';
+
 
 function Register() {
+
+    const [formValue, setFormValue] = useState({
+        email: '',
+        password: ''
+    });
+
+    const [infoMessage, setInfoMessage] = useState('');
+    const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        setFormValue({
+            ...formValue,
+            [name]: value
+        });
+    }
+
+    function handleSubmit(e) {
+        e.preventDefault();
+        const { email, password } = formValue;
+        auth.register({ email, password })
+            .then((res) => {
+                navigate('/sign-in', { replace: true });
+                console.log(res)
+            }
+            )
+            .catch((err) => console.log(err));
+    }
+
     return (
         <>
             <Header>
                 <Link to="/sign-in" className="header__menu-item">Войти</Link>
             </Header>
             <main className="page__element login">
-                <h2 className="login__title">Регистрация</h2>
-                <form className="login__form">
+                <h1 className="login__title">Регистрация</h1>
+                <form className="login__form" onSubmit={handleSubmit}>
                     <label className="login__field">
                         <input className="login__input" type="email" placeholder="Email"
-                            name="email" required />
+                            name="email" required value={formValue.email} onChange={handleChange} />
                     </label>
                     <label className="login__field">
                         <input className="login__input" type="password"
-                            placeholder="Пароль" name="password" required />
+                            placeholder="Пароль" name="password" required value={formValue.password} onChange={handleChange} />
                     </label>
                     <button className="login__button" type="submit">Зарегистрироваться</button>
                 </form>

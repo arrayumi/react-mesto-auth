@@ -14,7 +14,7 @@ import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 import api from '../utils/api.js';
 import AddPlacePopup from './AddPlacePopup.js';
 import InfoTooltip from './InfoTooltip.js';
-
+import * as auth from '../utils/auth.js';
 
 
 function App() {
@@ -25,6 +25,7 @@ function App() {
     const [selectedCard, setSelectedCard] = useState({});
     const [currentUser, setCurrentUser] = useState({});
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [email, setEmail] = useState("");
 
     useEffect(() => {
         Promise.all([
@@ -62,6 +63,15 @@ function App() {
         setIsAddPlacePopupOpen(false);
         setIsEditAvatarPopupOpen(false);
         setSelectedCard({});
+    }
+
+    function handleLogin(token) {
+        setIsLoggedIn(true);
+        auth.checkToken(token)
+            .then((data) => {
+                setEmail(data.data.email);
+            })
+
     }
 
     function handleCardLike(card) {
@@ -111,20 +121,21 @@ function App() {
         <div className="page">
             <CurrentUserContext.Provider value={currentUser}>
                 <Routes>
-                    <Route path="/sign-in" element={<Login />} />
+                    <Route path="/sign-in" element={<Login handleLogin={handleLogin} />} />
                     <Route path="/sign-up" element={<Register />} />
                     <Route path="*" element={isLoggedIn ? <Navigate to="/" /> : <Navigate to="/sign-in" />} />
-                    <Route path="/" 
-                    element={<ProtectedRoute 
-                        element={Main} 
-                        isLoggedIn={isLoggedIn}
-                        onEditAvatar={handleEditAvatarClick}
-                        onEditProfile={handleEditProfileClick}
-                        onAddPlace={handleAddPlaceClick}
-                        onCardClick={handleCardClick}
-                        cards={cards}
-                        onCardLike={handleCardLike}
-                        onCardDelete={handleCardDelete} />}
+                    <Route path="/"
+                        element={<ProtectedRoute
+                            element={Main}
+                            isLoggedIn={isLoggedIn}
+                            onEditAvatar={handleEditAvatarClick}
+                            onEditProfile={handleEditProfileClick}
+                            onAddPlace={handleAddPlaceClick}
+                            onCardClick={handleCardClick}
+                            cards={cards}
+                            onCardLike={handleCardLike}
+                            onCardDelete={handleCardDelete}
+                            email={email} />}
                     />
 
                 </Routes>
@@ -141,7 +152,7 @@ function App() {
                 </PopupWithForm>
 
                 <ImagePopup card={selectedCard} onClose={closeAllPopups} />
-                <InfoTooltip isOpen={false} onClose={closeAllPopups} infoMessage={123}/>
+                <InfoTooltip isOpen={false} onClose={closeAllPopups} infoMessage={123} />
 
                 <Footer />
             </CurrentUserContext.Provider>
