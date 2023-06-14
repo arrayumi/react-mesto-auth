@@ -2,6 +2,7 @@ import React from 'react';
 import { useContext } from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 import Card from './Card.js';
+import Header from './Header.js';
 
 function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, cards, onCardLike, onCardDelete }) {
 
@@ -12,6 +13,8 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, cards, onC
 )
 
     return (
+        <>
+        <Header />
         <main className="page__element content">
             <section className="profile" aria-label="Профиль">
                 <div className="profile__avatar" onClick={onEditAvatar} >
@@ -35,6 +38,7 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, cards, onC
                 </ul>
             </section>
         </main>
+        </>
     )
 }
 

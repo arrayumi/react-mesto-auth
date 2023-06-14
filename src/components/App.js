@@ -13,6 +13,7 @@ import Register from './Register.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 import api from '../utils/api.js';
 import AddPlacePopup from './AddPlacePopup.js';
+import InfoTooltip from './InfoTooltip.js';
 
 
 
@@ -109,7 +110,6 @@ function App() {
     return (
         <div className="page">
             <CurrentUserContext.Provider value={currentUser}>
-                <Header />
                 <Routes>
                     <Route path="/sign-in" element={<Login />} />
                     <Route path="/sign-up" element={<Register />} />
@@ -141,6 +141,7 @@ function App() {
                 </PopupWithForm>
 
                 <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+                <InfoTooltip isOpen={false} onClose={closeAllPopups} infoMessage={123}/>
 
                 <Footer />
             </CurrentUserContext.Provider>
