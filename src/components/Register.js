@@ -4,14 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 import * as auth from '../utils/auth.js';
 
 
-function Register() {
+function Register({handleInfoMessage, handleInfoTooltipOpen}) {
 
     const [formValue, setFormValue] = useState({
         email: '',
         password: ''
     });
 
-    const [infoMessage, setInfoMessage] = useState('');
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -29,10 +28,14 @@ function Register() {
         auth.register({ email, password })
             .then((res) => {
                 navigate('/sign-in', { replace: true });
-                console.log(res)
+                handleInfoTooltipOpen();
+                handleInfoMessage(true);
             }
             )
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                console.log(err);
+                handleInfoMessage(false);
+            });
     }
 
     return (

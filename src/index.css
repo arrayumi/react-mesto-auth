@@ -46,6 +46,10 @@
 @import url(./blocks/popup/__container/_type/popup__container_type_update-avatar.css);
 @import url(./blocks/popup/__title/_type/popup__title_type_confirmation.css);
 @import url(./blocks/popup/__title/_type/popup__title_type_update-avatar.css);
+@import url(./blocks/popup/__reg-image/popup__reg-image.css);
+@import url(./blocks/popup/__reg-image/_type/popup__reg-image_type_error.css);
+@import url(./blocks/popup/__reg-image/_type/popup__reg-image_type_sucess.css);
+@import url(./blocks/popup/__reg-message/popup__reg-message.css);
 
 /* popup forms */
 @import url(./blocks/popup/__form/popup__form.css);

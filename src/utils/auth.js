@@ -9,9 +9,7 @@ export const register = ({ email, password }) => {
         },
         body: JSON.stringify({ email, password })
     })
-        .then((res) => {
-            return res.json();
-        })
+        .then(res => res.ok ? res.json() : Promise.reject(res.status));
 };
 
 export const authorize = ({ email, password }) => {
@@ -26,7 +24,7 @@ export const authorize = ({ email, password }) => {
         .then(res => res.ok ? res.json() : Promise.reject(res.status));
 };
 
-export const checkToken = (token) => {
+export const getContent = (token) => {
     return fetch(`${BASE_URL}/users/me`, {
         method: 'GET',
         headers: {
@@ -34,7 +32,5 @@ export const checkToken = (token) => {
             "Authorization": `Bearer ${token}`
         },
     })
-        .then(res => {
-            if (res.ok) return res.json();
-        });
+        .then(res => res.ok ? res.json() : Promise.reject(res.status));
 }

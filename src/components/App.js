@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute.js';
-import Header from './Header.js';
 import Main from './Main.js';
 import Footer from './Footer.js';
 import ImagePopup from './ImagePopup.js';
@@ -26,6 +25,9 @@ function App() {
     const [currentUser, setCurrentUser] = useState({});
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [email, setEmail] = useState("");
+    const navigate = useNavigate();
+    const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
+    const [isSucess, setIsSucess] = useState(true);
 
     useEffect(() => {
         Promise.all([
@@ -62,17 +64,42 @@ function App() {
         setIsEditProfilePopupOpen(false);
         setIsAddPlacePopupOpen(false);
         setIsEditAvatarPopupOpen(false);
+        setIsInfoTooltipOpen(false);
         setSelectedCard({});
     }
 
     function handleLogin(token) {
         setIsLoggedIn(true);
-        auth.checkToken(token)
+        auth.getContent(token)
             .then((data) => {
                 setEmail(data.data.email);
             })
-
     }
+
+    function handleLogout() {
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+      }
+
+    function checkToken() {
+        const token = localStorage.getItem('token');
+        if (token) {
+            handleLogin(token);
+            navigate('/cards', { replace: true });
+        }
+    }
+
+    function handleInfoMessage(result) {
+        setIsSucess(result);
+    }
+
+    function handleInfoTootipOpen() {
+        setIsInfoTooltipOpen(true);
+    }
+
+    useEffect(() => {
+        checkToken();
+    }, [])
 
     function handleCardLike(card) {
         const isLiked = card.likes.some(i => i._id === currentUser._id);
@@ -122,7 +149,7 @@ function App() {
             <CurrentUserContext.Provider value={currentUser}>
                 <Routes>
                     <Route path="/sign-in" element={<Login handleLogin={handleLogin} />} />
-                    <Route path="/sign-up" element={<Register />} />
+                    <Route path="/sign-up" element={<Register handleInfoMessage={handleInfoMessage} handleInfoTooltipOpen={handleInfoTootipOpen}/>} />
                     <Route path="*" element={isLoggedIn ? <Navigate to="/" /> : <Navigate to="/sign-in" />} />
                     <Route path="/"
                         element={<ProtectedRoute
@@ -135,7 +162,8 @@ function App() {
                             cards={cards}
                             onCardLike={handleCardLike}
                             onCardDelete={handleCardDelete}
-                            email={email} />}
+                            email={email}
+                            onLogOut={handleLogout} />}
                     />
 
                 </Routes>
@@ -152,7 +180,7 @@ function App() {
                 </PopupWithForm>
 
                 <ImagePopup card={selectedCard} onClose={closeAllPopups} />
-                <InfoTooltip isOpen={false} onClose={closeAllPopups} infoMessage={123} />
+                <InfoTooltip isOpen={isInfoTooltipOpen} onClose={closeAllPopups} isSucess={isSucess} />
 
                 <Footer />
             </CurrentUserContext.Provider>

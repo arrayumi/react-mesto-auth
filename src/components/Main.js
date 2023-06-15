@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 import Card from './Card.js';
 import Header from './Header.js';
 
-function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, cards, onCardLike, onCardDelete, email }) {
+function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, cards, onCardLike, onCardDelete, email, onLogOut }) {
 
     const currentUser = useContext(CurrentUserContext);
 
@@ -16,7 +16,7 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, cards, onC
         <>
             <Header>
                 <p className="header__menu-item">{email}</p>
-                <Link to="/sign-in" className="header__menu-item header__menu-item_type_logout">Выйти</Link>
+                <Link to="/sign-in" className="header__menu-item header__menu-item_type_logout" onClick={onLogOut}>Выйти</Link>
             </Header>
             <main className="page__element content">
                 <section className="profile" aria-label="Профиль">
