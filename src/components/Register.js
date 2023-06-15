@@ -1,17 +1,14 @@
 import { useState } from "react";
 import Header from "./Header";
-import { Link, useNavigate } from "react-router-dom";
-import * as auth from '../utils/auth.js';
+import { Link } from "react-router-dom";
 
 
-function Register({handleInfoMessage, handleInfoTooltipOpen}) {
+function Register({ handleRegister }) {
 
     const [formValue, setFormValue] = useState({
         email: '',
         password: ''
     });
-
-    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -25,17 +22,7 @@ function Register({handleInfoMessage, handleInfoTooltipOpen}) {
     function handleSubmit(e) {
         e.preventDefault();
         const { email, password } = formValue;
-        auth.register({ email, password })
-            .then((res) => {
-                navigate('/sign-in', { replace: true });
-                handleInfoTooltipOpen();
-                handleInfoMessage(true);
-            }
-            )
-            .catch((err) => {
-                console.log(err);
-                handleInfoMessage(false);
-            });
+        handleRegister({ email, password })
     }
 
     return (

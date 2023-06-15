@@ -68,18 +68,19 @@ function App() {
         setSelectedCard({});
     }
 
-    function handleLogin(token) {
+    function handleLoginState(token) {
         setIsLoggedIn(true);
         auth.getContent(token)
             .then((data) => {
                 setEmail(data.data.email);
             })
+            .catch(err => console.log(err));
     }
 
     function handleLogout() {
         localStorage.removeItem('token');
         setIsLoggedIn(false);
-      }
+    }
 
     function checkToken() {
         const token = localStorage.getItem('token');
@@ -93,7 +94,7 @@ function App() {
         setIsSucess(result);
     }
 
-    function handleInfoTootipOpen() {
+    function handleInfoTooltipOpen() {
         setIsInfoTooltipOpen(true);
     }
 
@@ -144,12 +145,40 @@ function App() {
             .catch(err => console.log(err));
     }
 
+    function handleRegister({ email, password }) {
+        auth.register({ email, password })
+            .then((res) => {
+                navigate('/sign-in', { replace: true });
+                handleInfoTooltipOpen();
+                handleInfoMessage(true);
+            }
+            )
+            .catch((err) => {
+                console.log(err);
+                handleInfoTooltipOpen();
+                handleInfoMessage(false);
+            });
+    }
+
+    function handleLogin({ email, password }) {
+        auth.authorize({ email, password })
+            .then((data) => {
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    handleLoginState(data.token);
+                    navigate('/cards', { replace: true });
+                }
+            }
+            )
+            .catch((err) => console.log(err));
+    }
+
     return (
         <div className="page">
             <CurrentUserContext.Provider value={currentUser}>
                 <Routes>
                     <Route path="/sign-in" element={<Login handleLogin={handleLogin} />} />
-                    <Route path="/sign-up" element={<Register handleInfoMessage={handleInfoMessage} handleInfoTooltipOpen={handleInfoTootipOpen}/>} />
+                    <Route path="/sign-up" element={<Register handleRegister={handleRegister} />} />
                     <Route path="*" element={isLoggedIn ? <Navigate to="/" /> : <Navigate to="/sign-in" />} />
                     <Route path="/"
                         element={<ProtectedRoute
