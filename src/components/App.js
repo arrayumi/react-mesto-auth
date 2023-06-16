@@ -85,7 +85,7 @@ function App() {
     function checkToken() {
         const token = localStorage.getItem('token');
         if (token) {
-            handleLogin(token);
+            handleLoginState(token);
             navigate('/cards', { replace: true });
         }
     }
